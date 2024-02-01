@@ -1,0 +1,16 @@
+# Carpeta binaria generada por compilación
+bin/
+
+# Carpeta de salida generada por compilación
+obj/
+
+# Archivos de configuración específicos de Visual Studio
+.vscode/
+*.suo
+*.user
+*.userosscaches
+*.sln.docstates
+
+# Archivo de configuración de NuGet
+*.nuget.props
+*.nuget.targets
