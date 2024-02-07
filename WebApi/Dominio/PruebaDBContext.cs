@@ -10,7 +10,7 @@ namespace WebApi.Dominio
         }
 
         public DbSet<Producto> Productos { get; set; }
-        public DbSet<TipoProducto> tipoProductos { get; set; }
+        public DbSet<TipoProducto> TipoProductos { get; set; }
     }
 }
 

@@ -62,14 +62,14 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("NombreTipo")
+                    b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
-                    b.ToTable("tipoProductos");
+                    b.ToTable("TipoProductos");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,8 +12,8 @@ using WebApi.Dominio;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(PruebaDBContext))]
-    [Migration("20240207224109_TipoMigrations")]
-    partial class TipoMigrations
+    [Migration("20240207225125_AgregarTablaTipoProducto")]
+    partial class AgregarTablaTipoProducto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,14 +65,14 @@ namespace WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("NombreTipo")
+                    b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
-                    b.ToTable("tipoProductos");
+                    b.ToTable("TipoProductos");
                 });
 #pragma warning restore 612, 618
         }

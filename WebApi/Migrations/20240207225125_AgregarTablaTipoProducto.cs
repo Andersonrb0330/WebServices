@@ -5,22 +5,22 @@
 namespace WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class TipoMigrations : Migration
+    public partial class AgregarTablaTipoProducto : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "tipoProductos",
+                name: "TipoProductos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NombreTipo = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Nombre = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tipoProductos", x => x.Id);
+                    table.PrimaryKey("PK_TipoProductos", x => x.Id);
                 });
         }
 
@@ -28,7 +28,7 @@ namespace WebApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "tipoProductos");
+                name: "TipoProductos");
         }
     }
 }
