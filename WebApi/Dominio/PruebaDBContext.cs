@@ -1,0 +1,15 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace WebApi.Dominio
+{
+    public class PruebaDBContext : DbContext
+    {
+        public PruebaDBContext(DbContextOptions<PruebaDBContext> options) : base(options)
+        {
+
+        }
+
+        public DbSet<Producto> Productos { get; set; }
+    }
+}
+

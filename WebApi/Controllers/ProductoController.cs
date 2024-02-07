@@ -4,7 +4,7 @@
 
 namespace WebApi.Controllers
 {
-    [Route("api/pruebaproductos")]
+    [Route("api/productos")]
     public class ProductoController : Controller
     {
         // GET: api/values

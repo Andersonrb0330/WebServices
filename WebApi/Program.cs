@@ -1,4 +1,7 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Microsoft.EntityFrameworkCore;
+using WebApi.Dominio;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -6,6 +9,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<PruebaDBContext>(opt =>
+{
+    opt.UseSqlServer(@"Server=localhost,1433;Database=PruebaDB;user Id=sa;password=Qwerty123456@;Encrypt=False;");
+});
 
 var app = builder.Build();
 
