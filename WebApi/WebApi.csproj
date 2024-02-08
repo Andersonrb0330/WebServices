@@ -23,5 +23,9 @@
 
   <ItemGroup>
     <None Remove="Dominio\" />
+    <None Remove="Dtos\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dtos\" />
   </ItemGroup>
 </Project>
