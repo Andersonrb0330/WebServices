@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebApi.Dominio;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<PruebaDBContext>(opt =>
 {
-    opt.UseSqlServer(@"Server=localhost,1433;Database=PruebaDB;user Id=sa;password=Qwerty123456@;Encrypt=False;");
+    opt.UseSqlServer("Data Source=.;Initial Catalog=PruebaDB;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
 });
 
 var app = builder.Build();

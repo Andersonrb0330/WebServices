@@ -12,6 +12,7 @@ namespace WebApi.Dominio
         public DbSet<Producto> Productos { get; set; }
         public DbSet<TipoProducto> TipoProductos { get; set; }
         public DbSet<Usuario > Usuarios { get; set; }
+        public DbSet<Pais> Paises { get; set; }
     }
 }
 
