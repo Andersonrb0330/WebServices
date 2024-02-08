@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApi.Dominio;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -7,24 +9,36 @@ namespace WebApi.Controllers
     [Route("api/productos")]
     public class ProductoController : Controller
     {
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly PruebaDBContext _context;
+
+        public ProductoController(PruebaDBContext context)
         {
-            return new string[] { "value1", "value2" };
+            _context = context;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+
+        [HttpGet]
+        public List<Producto> ObtenerProductos()
         {
-            return "value";
+            var productos = _context.Productos.ToList();
+            return productos;
+        }
+
+
+        [HttpGet("{id}")]
+        public Producto ObtenerProductosPorId(int id)
+        {
+            var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
+            return producto;
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public Producto AgregarProducto(Producto producto)
         {
+            _context.Productos.Add(producto);
+            _context.SaveChanges();
+            return producto;
         }
 
         // PUT api/values/5
