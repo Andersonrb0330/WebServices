@@ -43,7 +43,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Pais> AgregarPais(Pais pais)
+        public ActionResult<Pais> AgregarPais([FromBody] Pais pais)
         {
             _context.Paises.Add(pais);
             _context.SaveChanges();
@@ -80,9 +80,6 @@ namespace WebApi.Controllers
 
             return  Ok();
         }
-
-
-
     }
 }
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApi.Dominio;
 using WebApi.Dtos;
 
@@ -19,23 +18,15 @@ namespace WebApi.Controllers
 
 
         [HttpGet]
-        public List<Producto> ObtenerProductos()
+        public ActionResult<List<Producto>> ObtenerProductos()
         {
             var productos = _context.Productos.ToList();
             return productos;
         }
 
-        /*[HttpPost]
-        [Route("filtros")]
-        public List<Producto> FiltrarProductos([FromBody] ProductoParametro parametros)
-        {
-            var productos = _context.Productos.Where(p => p.Nombre == parametros.Nombre).ToList();
-            return productos;
-        }*/
-
         [HttpPost]
         [Route("filtros")]
-        public List<Producto> FiltrarProductos([FromBody] ProductoParametro parametros)
+        public ActionResult<List<Producto>> FiltrarProductos([FromBody] ProductoParametro parametros)
         {
             var consulta = _context.Productos.AsQueryable();
             if (!string.IsNullOrWhiteSpace(parametros.Nombre))
@@ -67,40 +58,56 @@ namespace WebApi.Controllers
 
 
         [HttpGet("{id}")]
-        public Producto ObtenerProductosPorId(int id)
+        public ActionResult ObtenerProductosPorId(int id)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
-            return producto;
+            return Ok(producto);
         }
 
         // POST api/values
         [HttpPost]
-        public Producto AgregarProducto(Producto producto)
+        public ActionResult AgregarProducto([FromBody] Producto producto)
         {
             _context.Productos.Add(producto);
             _context.SaveChanges();
-            return producto;
+            return Ok(producto);
         }
 
-        // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public ActionResult<Producto> ActulizarProducto(int id, [FromBody] Producto producto)
         {
+            var updateProducto = _context.Productos.FirstOrDefault(p => p.Id == id);
+            if (updateProducto == null)
+            {
+                return NotFound($"El Producto con id {id} no existe");
+            }
+
+            updateProducto.Nombre = producto.Nombre;
+            updateProducto.Precio = producto.Precio;
+            updateProducto.Estado = producto.Estado;
+            updateProducto.Stock = producto.Stock;
+            updateProducto.Descripcion = producto.Descripcion;
+
+            _context.SaveChanges();
+
+            return Ok(updateProducto);
         }
-
-
 
 
 
         [HttpDelete("{id}")]
-        public Producto DeleteProducto(int id)
+        public ActionResult DeleteProducto(int id)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
 
+            if (producto == null)
+            {
+                return NotFound($"El Producto con id {id} no existe");
+            }
             _context.Productos.Remove(producto);
             _context.SaveChanges();
 
-            return producto;
+            return Ok(producto);
         }
     }
 }
