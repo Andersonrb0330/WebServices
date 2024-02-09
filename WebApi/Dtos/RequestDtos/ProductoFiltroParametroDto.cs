@@ -1,13 +1,13 @@
-﻿namespace WebApi.Dtos
+﻿namespace WebApi.Dtos.RequestDtos
 {
-    public class ProductoParametro
+    public class ProductoFiltroParametroDto
 	{
         public string Nombre { get; set; }
         public string Descripcion  { get; set; }
         public bool? Estado { get; set; }
         public int? Stock { get; set; }
 
-        public ProductoParametro()
+        public ProductoFiltroParametroDto()
 		{
 			
 		}

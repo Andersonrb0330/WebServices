@@ -16,9 +16,10 @@ namespace WebApi.Dominio
         [StringLength(50)]
         public string Apellido { get; set; }
 
-        public int Edad { get; set; }
+        public int? Edad { get; set; }
 
         [Column(TypeName = "date")]
+
         public DateTime FechaNacimiento { get; set; }
 
         [Column(TypeName = "varchar")]

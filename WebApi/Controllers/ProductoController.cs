@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Dominio;
-using WebApi.Dtos;
+using WebApi.Dtos.RequestDtos;
+using WebApi.Dtos.ResponseDtos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,15 +19,26 @@ namespace WebApi.Controllers
 
 
         [HttpGet]
-        public ActionResult<List<Producto>> ObtenerProductos()
+        public ActionResult<List<ProductoDto>> ObtenerProductos()
         {
             var productos = _context.Productos.ToList();
-            return productos;
+            
+            var productosDto = productos.Select(p => new ProductoDto
+            {
+                Id = p.Id,
+                Nombre = p.Nombre,
+                Estado = p.Estado,
+                Stock = p.Stock,
+                Descripcion = p.Descripcion,
+
+            }).ToList();
+
+            return productosDto;
         }
 
         [HttpPost]
         [Route("filtros")]
-        public ActionResult<List<Producto>> FiltrarProductos([FromBody] ProductoParametro parametros)
+        public ActionResult<List<ProductoDto>> FiltrarProductos([FromBody] ProductoFiltroParametroDto parametros)
         {
             var consulta = _context.Productos.AsQueryable();
             if (!string.IsNullOrWhiteSpace(parametros.Nombre))
@@ -53,28 +65,75 @@ namespace WebApi.Controllers
             }
 
             var productos = consulta.ToList();
-            return productos; 
-        }
+
+            var productosDto = productos.Select(p => new ProductoDto
+            {
+                Id = p.Id,
+                Nombre = p.Nombre,
+                Precio = p.Precio,
+                Estado = p.Estado,
+                Stock = p.Stock,
+                Descripcion = p.Descripcion,
+
+            }).ToList();
+
+            return productosDto; 
+        }  
 
 
         [HttpGet("{id}")]
-        public ActionResult ObtenerProductosPorId(int id)
+        public ActionResult<ProductoDto> ObtenerProductosPorId(int id)
         {
             var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
-            return Ok(producto);
+            var obtenerProducto = new ProductoDto
+            {
+                Id = producto.Id,
+                Nombre = producto?.Nombre,
+                Precio = producto.Precio,
+                Estado = producto.Estado,
+                Stock  = producto?.Stock,
+                Descripcion = producto.Descripcion
+            };
+
+            return obtenerProducto;
         }
 
         // POST api/values
         [HttpPost]
-        public ActionResult AgregarProducto([FromBody] Producto producto)
+        public ActionResult<ProductoDto> AgregarProducto([FromBody] ProductoParametroDto producto)
         {
-            _context.Productos.Add(producto);
+            //instanciamos nuestra entiedad Producto
+            var nuevoProducto = new Producto
+            {
+                Nombre = producto.Nombre,
+                Precio = producto.Precio,
+                Estado = producto .Estado,
+                Stock  = producto.Stock,
+                Descripcion = producto.Descripcion
+            };
+
+            // add agregamos a nuevoProducto
+            _context.Productos.Add(nuevoProducto);
+            // aquì es donde recièn se guarda
             _context.SaveChanges();
-            return Ok(producto);
+
+            // Instanciamos nuestra entiedad Producto
+            // ya guardado lo utilizamos en  productoDto  (nuevoProducto)
+            var agregarProductoDto = new ProductoDto
+            {
+                Id     = nuevoProducto.Id,
+                Nombre = nuevoProducto.Nombre,
+                Precio = nuevoProducto.Precio,
+                Estado = producto.Estado,
+                Stock = producto.Stock,
+                Descripcion = nuevoProducto.Descripcion     
+            };
+
+            return agregarProductoDto;
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Producto> ActulizarProducto(int id, [FromBody] Producto producto)
+        public ActionResult<ProductoDto> ActulizarProducto(int id, [FromBody] ProductoParametroDto producto)
         {
             var updateProducto = _context.Productos.FirstOrDefault(p => p.Id == id);
             if (updateProducto == null)
@@ -90,7 +149,17 @@ namespace WebApi.Controllers
 
             _context.SaveChanges();
 
-            return Ok(updateProducto);
+            var updateProductoDto = new ProductoDto()
+            {
+              Id     = updateProducto.Id,
+              Nombre = updateProducto.Nombre,
+              Estado = updateProducto.Estado,
+              Precio = updateProducto.Precio,
+              Stock  = updateProducto.Stock,
+              Descripcion = updateProducto.Descripcion
+            };
+
+            return updateProductoDto;
         }
 
 
