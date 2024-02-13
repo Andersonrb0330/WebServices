@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Dominio;
+using WebApi.Dtos.RequestDtos;
+using WebApi.Dtos.ResponseDtos;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,54 +17,102 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Pais>> ObtenerPaises()
+        public ActionResult<List<PaisDto>> ObtenerPaises()
         {
             var paises = _context.Paises.ToList();
 
-            return Ok(paises);
+            var paisesDto = paises.Select(p => new PaisDto
+            {
+                Id = p.Id,
+                Nombre = p.Nombre
+            }).ToList();
+
+            return paisesDto;
         } 
 
-        [HttpGet]
+        [HttpPost]
         [Route ("filtros")] 
-        public ActionResult<List<Pais>> FiltrarPaises(string nombre)
-        {       
-          //  var paises = _context.Paises.Where(p => p.Nombre == nombre);
-          //rusia.contiene(ia)
-            var paises = _context.Paises.Where(p => p.Nombre.Contains(nombre));
+        public ActionResult<List<PaisDto>> FiltrarPaises([FromBody] PaisFiltroParametroDto parametros)
+        {
+            var consulta = _context.Paises.AsQueryable();
 
-            return Ok(paises);
+            if (!string.IsNullOrWhiteSpace(parametros.Nombre))
+            {
+                // Contains funciona como si fuera LIKE %and%erson
+                consulta = consulta.Where(p => p.Nombre.Contains(parametros.Nombre));
+            }
+
+            var paises = consulta.ToList();
+
+            var paisesDto = paises.Select(p => new PaisDto
+            {
+                Id = p.Id,
+                Nombre = p.Nombre
+            }).ToList();
+
+            return paisesDto;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Pais> ObtenerPaisPorId(int id)
+        public ActionResult<PaisDto> ObtenerPaisPorId(int id)
         {
             // FirstOrDefault sirve para que no cause error como lo hace (First) si no encuentra dato.
             var pais = _context.Paises.FirstOrDefault(p => p.Id == id);
+            var obtenerPais = new PaisDto
+            {
+                Id = pais.Id,
+                Nombre = pais.Nombre,
+            };
 
-            return Ok(pais);
+            return obtenerPais;
         }
 
         [HttpPost]
-        public ActionResult<Pais> AgregarPais([FromBody] Pais pais)
+        public ActionResult<PaisDto> AgregarPais([FromBody] PaisParametroDto pais)
         {
-            _context.Paises.Add(pais);
+            //instanciamos nuestra entiedad Producto
+            var nuevoPais = new Pais
+            {
+                Nombre = pais.Nombre             
+            };
+
+            // add agregamos a nuevoProducto
+            _context.Paises.Add(nuevoPais);
+            // aquì es donde recièn se guarda
             _context.SaveChanges();
-            return Ok(pais);
+
+            // Instanciamos nuestra entiedad Pais
+            // ya guardado lo utilizamos en  PaisDto  (nuevoPais)
+            var agregarPaisDto = new PaisDto
+            {
+                Id = nuevoPais.Id,
+                Nombre = nuevoPais.Nombre
+            };
+
+            return agregarPaisDto;
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Pais>  ActulizarPais(int id, [FromBody] Pais pais)
+        public ActionResult<PaisDto>  ActulizarPais(int id, [FromBody] PaisParametroDto pais)
         {
-            var  updatePais = _context.Paises.FirstOrDefault(p => p.Id == id);
-            if (updatePais == null) {
-                return NotFound($"El Paìs con id {id} no existe");
+            var updatePais = _context.Paises.FirstOrDefault(p => p.Id == id);
+            if (updatePais == null)
+            {
+                return NotFound($"El Pais con id {id} no existe");
             }
 
-            updatePais.Nombre =  pais.Nombre;
+            updatePais.Nombre = pais.Nombre;
+         
 
             _context.SaveChanges();
 
-            return Ok(updatePais);
+            var updatePaisDto = new PaisDto()
+            {
+                Id = updatePais.Id,
+                Nombre = updatePais.Nombre
+            };
+
+            return updatePaisDto;
         }
 
 
@@ -70,15 +120,15 @@ namespace WebApi.Controllers
         public ActionResult DeletePais(int id)
         {
             var pais = _context.Paises.FirstOrDefault(p => p.Id == id);
+
             if (pais == null)
             {
-                return NotFound($"El Paìs con id {id} no existe");
+                return NotFound($"El Pais con id {id} no existe");
             }
-
             _context.Paises.Remove(pais);
             _context.SaveChanges();
 
-            return  Ok();
+            return Ok(pais);
         }
     }
 }

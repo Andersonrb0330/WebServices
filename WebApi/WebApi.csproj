@@ -27,9 +27,4 @@
     <None Remove="Dtos\RequestDtos\" />
     <None Remove="Dtos\ResponseDtos\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="Dtos\RequestDtos\" />
-    <Folder Include="Dtos\ResponseDtos\" />
-  </ItemGroup>
 </Project>
