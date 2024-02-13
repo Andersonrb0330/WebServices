@@ -7,11 +7,11 @@ using WebApi.Dtos.ResponseDtos;
 
 namespace WebApi.Controllers
 {
-    [Route("api/paises")]
-    public class PaisController : Controller
+    [Route("api/paises-old")]
+    public class PaisOldController : Controller
     {
         private readonly PruebaDBContext _context;
-        public PaisController(PruebaDBContext context) {
+        public PaisOldController(PruebaDBContext context) {
 
             _context = context; 
         }
@@ -19,9 +19,9 @@ namespace WebApi.Controllers
         [HttpGet]
         public ActionResult<List<PaisDto>> ObtenerPaises()
         {
-            var paises = _context.Paises.ToList();
+            var pais = _context.Paises.ToList();
 
-            var paisesDto = paises.Select(p => new PaisDto
+            var paisesDto = pais.Select(p => new PaisDto
             {
                 Id = p.Id,
                 Nombre = p.Nombre
@@ -42,9 +42,9 @@ namespace WebApi.Controllers
                 consulta = consulta.Where(p => p.Nombre.Contains(parametros.Nombre));
             }
 
-            var paises = consulta.ToList();
+            var pais = consulta.ToList();
 
-            var paisesDto = paises.Select(p => new PaisDto
+            var paisesDto = pais.Select(p => new PaisDto
             {
                 Id = p.Id,
                 Nombre = p.Nombre
@@ -58,6 +58,10 @@ namespace WebApi.Controllers
         {
             // FirstOrDefault sirve para que no cause error como lo hace (First) si no encuentra dato.
             var pais = _context.Paises.FirstOrDefault(p => p.Id == id);
+            if (pais == null) {
+                return null;
+            }
+
             var obtenerPais = new PaisDto
             {
                 Id = pais.Id,
@@ -70,13 +74,13 @@ namespace WebApi.Controllers
         [HttpPost]
         public ActionResult<PaisDto> AgregarPais([FromBody] PaisParametroDto pais)
         {
-            //instanciamos nuestra entiedad Producto
+            //instanciamos nuestra entiedad Pais
             var nuevoPais = new Pais
             {
                 Nombre = pais.Nombre             
             };
 
-            // add agregamos a nuevoProducto
+            // add agregamos a nuevoPais
             _context.Paises.Add(nuevoPais);
             // aquì es donde recièn se guarda
             _context.SaveChanges();

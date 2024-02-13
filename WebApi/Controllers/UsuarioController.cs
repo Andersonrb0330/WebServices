@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Dominio;
-using WebApi.Dtos;
+using WebApi.Dtos.RequestDtos;
+using WebApi.Dtos.ResponseDtos;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,83 +12,98 @@ namespace WebApi.Controllers
     public class UsuarioController : Controller
     {
         private readonly PruebaDBContext _context;
+        private readonly IMapper _mapper;
 
-        public UsuarioController(PruebaDBContext context)
+
+        public UsuarioController(PruebaDBContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public ActionResult<List<Usuario>> ObtenerUsuarios()
+        public ActionResult<List<UsuarioDto >> ObtenerUsuarios()
         {
-            var usuarios = _context.Usuarios.ToList();
-            return usuarios;
+            var usuario = _context.Usuarios.ToList();
+            var usuarioDto = _mapper.Map<List<UsuarioDto>>(usuario);
+
+            return usuarioDto;
         }
 
         [HttpGet("{id}")]
-        public ActionResult ObtenerUsuariosPorId(int id)
+        public ActionResult<UsuarioDto>ObtenerUsuarioPorId(int id)
         {
-            var usuario = _context.Usuarios .FirstOrDefault(p => p.Id == id);
-            return Ok(usuario);
+            // FirstOrDefault sirve para que no cause error como lo hace (First) si no encuentra dato.
+            var usuario = _context.Usuarios.FirstOrDefault(p => p.Id == id);
+            var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
+
+            return usuarioDto;
         }
 
         [HttpPost]
         [Route("filtros")]
-        public ActionResult<List<Usuario>> FiltrarUsuarios([FromBody] Usuario usuario)
+        public ActionResult<List<UsuarioDto>> FiltrarUsuarios([FromBody] UsuarioFiltroParametroDto parametros)
         {
             var consulta = _context.Usuarios.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(usuario.Nombre))
+            if (!string.IsNullOrWhiteSpace(parametros.Nombre))
             {
                 // Obtengo el nombre exactamente como esta escrito
-                consulta = consulta.Where(u => u.Nombre == usuario.Nombre);
+                consulta = consulta.Where(u => u.Nombre == parametros.Nombre);
             }
 
-            if (!string.IsNullOrWhiteSpace(usuario.Apellido))
+            if (!string.IsNullOrWhiteSpace(parametros.Apellido))
             {
                 // Contains funciona como si fuera LIKE %and%erson
-                consulta = consulta.Where(u => u.Apellido.Contains(usuario.Apellido));
+                consulta = consulta.Where(u => u.Apellido.Contains(parametros.Apellido));
             }
 
-            if (usuario.Edad.HasValue && usuario.Edad <= 150)
+            if (parametros.Edad.HasValue && parametros.Edad <= 150)
             {
-                consulta = consulta.Where(u => u.Edad == usuario.Edad);
+                consulta = consulta.Where(u => u.Edad == parametros.Edad);
 
-            }else if (usuario.Edad.HasValue && usuario.Edad > 150)
+            }
+            else if (parametros.Edad.HasValue && parametros.Edad > 150)
             {
                 return BadRequest("La edad proporcionada es inválida. La edad máxima permitida es 150 años.");
             }
 
-            if (usuario.FechaNacimiento != DateTime.MinValue)
+            if (parametros.FechaNacimiento != DateTime.MinValue)
             {
                 // Filtrar por fecha de nacimiento
-                consulta = consulta.Where(u => u.FechaNacimiento == usuario.FechaNacimiento);
+                consulta = consulta.Where(u => u.FechaNacimiento == parametros.FechaNacimiento);
             }
 
-            if (!string.IsNullOrWhiteSpace(usuario.Telefono))
+            if (!string.IsNullOrWhiteSpace(parametros.Telefono))
             {
                 // Contains funciona como si fuera LIKE %and%erson
-                consulta = consulta.Where(u => u.Telefono.Contains(usuario.Telefono));
+                consulta = consulta.Where(u => u.Telefono.Contains(parametros.Telefono));
             }
 
             var usuarios = consulta.ToList();
-            return usuarios;
+            var usuariosDto = _mapper.Map<List<UsuarioDto>>(usuarios);
 
+            return usuariosDto;
         }
+
 
         [HttpPost]
-        public ActionResult AgregarUsuario([FromBody] Usuario usuario)
+        public ActionResult<UsuarioDto> AgregarUsuario([FromBody] UsuarioParametroDto usuario)
         {
-            _context.Usuarios.Add(usuario);
-            _context.SaveChanges();
-            return Ok(usuario);
-        }
+            var nuevoUsuario = _mapper.Map<Usuario>(usuario);
 
+            _context.Usuarios.Add(nuevoUsuario);
+            _context.SaveChanges();
+
+            var agregarUsuarioDto = _mapper.Map<UsuarioDto>(nuevoUsuario);
+
+            return agregarUsuarioDto;
+        }
 
 
         [HttpPut("{id}")]
-        public ActionResult<Usuario> ActulizarUsuario(int id, [FromBody] Usuario usuario)
+        public ActionResult<UsuarioDto> ActulizarUsuario(int id, [FromBody] UsuarioParametroDto usuario)
         {
-            var updateUsuario = _context.Usuarios.FirstOrDefault(p => p.Id == id);
+            var updateUsuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (updateUsuario == null)
             {
                 return NotFound($"El Usuario con id {id} no existe");
@@ -100,13 +117,15 @@ namespace WebApi.Controllers
 
             _context.SaveChanges();
 
-            return Ok(updateUsuario);
-        }        
+            var updateUsuarioDto = _mapper.Map<UsuarioDto>(updateUsuario);
+
+            return updateUsuarioDto;
+        }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteUsuario(int id)
         {
-            var usuario = _context.Usuarios.FirstOrDefault(p => p.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
 
             if (usuario == null)
             {
@@ -115,7 +134,8 @@ namespace WebApi.Controllers
             _context.Usuarios.Remove(usuario);
             _context.SaveChanges();
 
-            return Ok(usuario);
+            return Ok();
         }
     }
 }
+
