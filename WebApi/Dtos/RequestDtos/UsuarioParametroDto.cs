@@ -13,6 +13,8 @@
 
         public string Telefono { get; set; }
 
+        public int IdPais { get; set; }
+
 
         public UsuarioParametroDto()
 		{

@@ -14,6 +14,8 @@
 
         public string Descripcion { get; set; }
 
+        public TipoProductoDto TipoProducto { get; set; }
+
         public ProductoDto()
 		{
 		}

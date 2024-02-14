@@ -13,6 +13,8 @@ namespace WebApi.Dominio
         [StringLength(50)]
         public string Nombre { get; set; }
 
+        public ICollection<Producto> Productos { get; set;  }
+
         public TipoProducto()
 		{
 		}

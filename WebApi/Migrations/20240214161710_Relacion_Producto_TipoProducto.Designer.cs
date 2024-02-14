@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApi.Dominio;
 
@@ -11,9 +12,11 @@ using WebApi.Dominio;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(PruebaDBContext))]
-    partial class PruebaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240214161710_Relacion_Producto_TipoProducto")]
+    partial class Relacion_Producto_TipoProducto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,9 +117,6 @@ namespace WebApi.Migrations
                     b.Property<DateTime>("FechaNacimiento")
                         .HasColumnType("date");
 
-                    b.Property<int>("IdPais")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -128,8 +128,6 @@ namespace WebApi.Migrations
                         .HasColumnType("varchar");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IdPais");
 
                     b.ToTable("Usuarios");
                 });
@@ -143,22 +141,6 @@ namespace WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoProducto");
-                });
-
-            modelBuilder.Entity("WebApi.Dominio.Usuario", b =>
-                {
-                    b.HasOne("WebApi.Dominio.Pais", "Pais")
-                        .WithMany("Usuarios")
-                        .HasForeignKey("IdPais")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Pais");
-                });
-
-            modelBuilder.Entity("WebApi.Dominio.Pais", b =>
-                {
-                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("WebApi.Dominio.TipoProducto", b =>

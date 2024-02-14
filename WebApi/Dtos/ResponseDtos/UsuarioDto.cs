@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Dtos.ResponseDtos
 {
-    public class ProductoDto
+    public class UsuarioDto
 	{
 
         public int Id { get; set; }
@@ -15,8 +15,12 @@
 
         public string Telefono { get; set; }
 
+        public PaisDto Pais { get; set; }
 
-   
-	}
+        public UsuarioDto()
+        {
+        }
+
+    }
 }
 

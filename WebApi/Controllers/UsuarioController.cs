@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Dominio;
 using WebApi.Dtos.RequestDtos;
 using WebApi.Dtos.ResponseDtos;
@@ -12,7 +13,7 @@ namespace WebApi.Controllers
     public class UsuarioController : Controller
     {
         private readonly PruebaDBContext _context;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper; 
 
 
         public UsuarioController(PruebaDBContext context, IMapper mapper)
@@ -22,9 +23,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<UsuarioDto >> ObtenerUsuarios()
+        public ActionResult<List<UsuarioDto>> ObtenerUsuarios()
         {
-            var usuario = _context.Usuarios.ToList();
+            var usuario = _context.Usuarios.Include(u => u.Pais).ToList();
             var usuarioDto = _mapper.Map<List<UsuarioDto>>(usuario);
 
             return usuarioDto;
@@ -34,7 +35,7 @@ namespace WebApi.Controllers
         public ActionResult<UsuarioDto>ObtenerUsuarioPorId(int id)
         {
             // FirstOrDefault sirve para que no cause error como lo hace (First) si no encuentra dato.
-            var usuario = _context.Usuarios.FirstOrDefault(p => p.Id == id);
+            var usuario = _context.Usuarios.Include(u => u.Pais).FirstOrDefault(p => p.Id == id);
             var usuarioDto = _mapper.Map<UsuarioDto>(usuario);
 
             return usuarioDto;
@@ -44,7 +45,7 @@ namespace WebApi.Controllers
         [Route("filtros")]
         public ActionResult<List<UsuarioDto>> FiltrarUsuarios([FromBody] UsuarioFiltroParametroDto parametros)
         {
-            var consulta = _context.Usuarios.AsQueryable();
+            var consulta = _context.Usuarios.Include(u => u.Pais).AsQueryable();
             if (!string.IsNullOrWhiteSpace(parametros.Nombre))
             {
                 // Obtengo el nombre exactamente como esta escrito
@@ -95,6 +96,11 @@ namespace WebApi.Controllers
             _context.SaveChanges();
 
             var agregarUsuarioDto = _mapper.Map<UsuarioDto>(nuevoUsuario);
+            agregarUsuarioDto.Pais = new PaisDto
+            {
+                Id = usuario .IdPais
+            };
+
 
             return agregarUsuarioDto;
         }
@@ -109,11 +115,12 @@ namespace WebApi.Controllers
                 return NotFound($"El Usuario con id {id} no existe");
             }
 
-            updateUsuario.Nombre = usuario.Nombre;
+            updateUsuario.Nombre   = usuario.Nombre;
             updateUsuario.Apellido = usuario.Apellido;
-            updateUsuario.Edad = usuario.Edad;
+            updateUsuario.Edad     = usuario.Edad.Value;
             updateUsuario.FechaNacimiento = usuario.FechaNacimiento;
             updateUsuario.Telefono = usuario.Telefono;
+            updateUsuario.IdPais   = usuario.IdPais;
 
             _context.SaveChanges();
 

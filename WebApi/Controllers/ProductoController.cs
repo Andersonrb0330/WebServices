@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Dominio;
 using WebApi.Dtos.RequestDtos;
 using WebApi.Dtos.ResponseDtos;
@@ -28,7 +25,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public ActionResult<List<ProductoDto>> ObtenerProductos()
         {
-            var producto = _context.Usuarios.ToList();
+            var producto = _context.Productos.Include( p => p.TipoProducto).ToList();
             var productoDto = _mapper.Map<List<ProductoDto>>(producto);
 
             return productoDto;
@@ -39,7 +36,8 @@ namespace WebApi.Controllers
         public ActionResult<ProductoDto> ObtenerProductoPorId(int id)
         {
             // FirstOrDefault sirve para que no cause error como lo hace (First) si no encuentra dato.
-            var producto = _context.Usuarios.FirstOrDefault(p => p.Id == id);
+            var producto = _context.Productos.Include(p => p.TipoProducto)
+                .FirstOrDefault(p => p.Id == id);
             var productoDto = _mapper.Map<ProductoDto>(producto);
 
             return productoDto;
@@ -49,7 +47,7 @@ namespace WebApi.Controllers
         [Route("filtros")]
         public ActionResult<List<ProductoDto>> FiltrarProductos([FromBody] ProductoFiltroParametroDto parametros)
         {
-            var consulta = _context.Productos.AsQueryable();
+            var consulta = _context.Productos.Include(p => p.TipoProducto).AsQueryable();
             if (!string.IsNullOrWhiteSpace(parametros.Nombre))
             {
                 // Obtengo el nombre exactamente como esta escrito
@@ -90,6 +88,10 @@ namespace WebApi.Controllers
             _context.SaveChanges();
 
             var agregarProductoDto = _mapper.Map<ProductoDto>(nuevoProducto);
+            agregarProductoDto.TipoProducto = new TipoProductoDto
+            {
+                Id = producto.IdTipoProducto
+            };
 
             return agregarProductoDto;
         }
@@ -109,6 +111,7 @@ namespace WebApi.Controllers
             updateProducto.Estado   = producto.Estado;
             updateProducto.Stock    = producto.Stock;
             updateProducto.Descripcion = producto.Descripcion;
+            updateProducto.IdTipoProducto = producto.IdTipoProducto;
 
             _context.SaveChanges();
 
@@ -117,6 +120,20 @@ namespace WebApi.Controllers
             return updateProductoDto;
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult DeleteProducto(int id)
+        {
+            var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
+
+            if (producto == null)
+            {
+                return NotFound($"El Producto con id {id} no existe");
+            }
+            _context.Productos.Remove(producto);
+            _context.SaveChanges();
+
+            return Ok(producto);
+        }
 
     }
 }

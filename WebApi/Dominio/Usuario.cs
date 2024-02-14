@@ -16,7 +16,7 @@ namespace WebApi.Dominio
         [StringLength(50)]
         public string Apellido { get; set; }
 
-        public int? Edad { get; set; }
+        public int Edad { get; set; }
 
         [Column(TypeName = "date")]
 
@@ -25,6 +25,12 @@ namespace WebApi.Dominio
         [Column(TypeName = "varchar")]
         [StringLength(20)]
         public string Telefono { get; set; }
+
+        public int IdPais { get; set; }
+
+        //Virtual : se pone para dar a entener que no quiero que sea necesario para
+        // guardar informaciòn en TipoProducto
+        public virtual Pais Pais { get; set; }
 
 
         public Usuario()

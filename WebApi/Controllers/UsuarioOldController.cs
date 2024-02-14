@@ -120,7 +120,7 @@ namespace WebApi.Controllers
             {
                 Nombre = usuario.Nombre,
                 Apellido = usuario.Apellido,
-                Edad = usuario.Edad,
+                Edad = usuario.Edad.Value,
                 FechaNacimiento = usuario.FechaNacimiento,
                 Telefono = usuario.Telefono
             };
@@ -158,7 +158,7 @@ namespace WebApi.Controllers
 
             updateUsuario.Nombre = usuario.Nombre;
             updateUsuario.Apellido = usuario.Apellido;
-            updateUsuario.Edad = usuario.Edad;
+            updateUsuario.Edad = usuario.Edad.Value;
             updateUsuario.FechaNacimiento = usuario.FechaNacimiento;
             updateUsuario.Telefono = usuario.Telefono;
 

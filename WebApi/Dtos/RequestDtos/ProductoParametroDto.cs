@@ -12,9 +12,11 @@ namespace WebApi.Dtos.RequestDtos
         public int? Stock { get; set; }
 
         public string Descripcion { get; set; }
-      
 
-        public ProductoParametroDto()
+        public int IdTipoProducto { get; set; }
+
+
+         public ProductoParametroDto()
 		{
 		}
 	}

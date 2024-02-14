@@ -10,6 +10,7 @@ namespace WebApi.MapeoDto
 		public AutoMapperProfile()
 		{
             CreateMap<Producto, ProductoDto>().ReverseMap();
+            CreateMap<ProductoParametroDto, Producto>();
 
             CreateMap<Pais, PaisDto>().ReverseMap();
             CreateMap<PaisParametroDto, Pais>();
