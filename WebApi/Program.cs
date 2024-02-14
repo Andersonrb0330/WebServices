@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Dominio;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using WebApi.MapeoDto;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<PruebaDBContext>(opt =>
 {
-    opt.UseSqlServer("Data Source=.;Initial Catalog=PruebaDB;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
 });
+
+// Configuración de AutoMapper 
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile<AutoMapperProfile>();
+});
+
+var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
