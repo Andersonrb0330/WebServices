@@ -80,6 +80,11 @@ namespace WebApi.Controllers
                 consulta = consulta.Where(u => u.Telefono.Contains(parametros.Telefono));
             }
 
+            if (parametros.IdPais.HasValue)
+            {
+                consulta = consulta.Where(u => u.IdPais == parametros.IdPais);
+            }
+
             var usuarios = consulta.ToList();
             var usuariosDto = _mapper.Map<List<UsuarioDto>>(usuarios);
 

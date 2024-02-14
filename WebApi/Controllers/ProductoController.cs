@@ -71,6 +71,11 @@ namespace WebApi.Controllers
                 consulta = consulta.Where(p => p.Stock > parametros.Stock);
             }
 
+            if (parametros.IdTipoProducto.HasValue)
+            {
+                consulta = consulta.Where(p => p.IdTipoProducto == parametros.IdTipoProducto);
+            }
+
             var productos = consulta.ToList();
 
             var productosDto = _mapper.Map<List<ProductoDto>>(productos);

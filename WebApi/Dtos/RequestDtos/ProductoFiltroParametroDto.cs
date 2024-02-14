@@ -6,6 +6,7 @@
         public string Descripcion  { get; set; }
         public bool? Estado { get; set; }
         public int? Stock { get; set; }
+        public int? IdTipoProducto { get; set; }
 
         public ProductoFiltroParametroDto()
 		{
